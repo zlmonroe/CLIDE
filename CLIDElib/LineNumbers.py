@@ -6,12 +6,12 @@ import tkinter
 
 class LineNumbers(tkinter.Frame):
     def __init__(self, root, changeText, *args, **kwargs):
-        tkinter.Frame.__init__(self, *args, **kwargs)
+        tkinter.Frame.__init__(self, root, *args, **kwargs)
 
         self.text = changeText
 
-        self.lineNumbers = tkinter.Canvas(root, width=30)
-        self.lineNumbers.pack(fill="y", expand=True)
+        self.lineNumbers = tkinter.Canvas(self, width=30)
+        self.lineNumbers.pack(expand=True, fill="both")
 
         self.text.bind("<<Change>>", self.__updateLineNumbers)
 

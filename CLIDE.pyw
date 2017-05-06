@@ -1,10 +1,11 @@
 import tkinter
-from tkinter import ttk
 from _tkinter import TclError
 
 from CLIDElib.PyConsole import PyConsole
 from CLIDElib.CodeBox import CodeBox
 from CLIDElib.LineNumbers import LineNumbers
+from CLIDElib.MenuBar import MenuBar
+from CLIDElib.DirectoryBrowser import DirectoryBrowser
 
 import os
 
@@ -20,19 +21,30 @@ class IDE(tkinter.Tk):
         except TclError:
             pass
 
+        # create a toplevel menu
+        menubar = MenuBar(self)
 
-        self.sliders = ttk.PanedWindow(orient="vertical")
-        self.sliders.pack(fill="both", expand=True)
+        # display the menu
+        self.config(menu=menubar)
+
+        self.mainPaneWindow = tkinter.PanedWindow(self, orient="vertical")
+        self.mainPaneWindow.pack(fill="both", expand=True)
 
         textFrame = tkinter.Frame(self)
 
         self.text = CodeBox(textFrame)
+        self.lineNumbers = LineNumbers(textFrame, self.text)
+
+        self.lineNumbers.pack(side=tkinter.LEFT, expand=False, fill="y")
         self.text.pack(side=tkinter.RIGHT, expand=True, fill="both")
 
-        self.lineNumbers = LineNumbers(textFrame, self.text)
-        self.lineNumbers.pack(side=tkinter.LEFT, expand=True, fill="y")
+        self.smallerPaneWindow = tkinter.PanedWindow(self.mainPaneWindow, orient="horizontal")
+        explorer = DirectoryBrowser(self.smallerPaneWindow)
+        self.smallerPaneWindow.add(explorer)
+        self.smallerPaneWindow.add(textFrame)
+        self.smallerPaneWindow.pack(expand=True, fill="both")
 
-        self.sliders.add(textFrame)
+        self.mainPaneWindow.add(self.smallerPaneWindow)
 
         self.terminal = PyConsole(self, height=10)
 
@@ -43,7 +55,7 @@ class IDE(tkinter.Tk):
         self.protocol("WM_DELETE_WINDOW", closeAndKill)
         self.terminal.bind("<<Process Ended>>", lambda e: self.text.focus_set())
 
-        self.sliders.add(self.terminal)
+        self.mainPaneWindow.add(self.terminal)
 
         self.bind("<F5>", self.runLisp)
 
