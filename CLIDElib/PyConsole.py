@@ -8,6 +8,7 @@ from time import sleep
 
 from CLIDElib.StdIO import StdIO
 
+DEBUG = True
 
 def iter_except(function, exception):
     """Works like builtin 2-argument `iter()`, but stops on `exception`."""
@@ -19,7 +20,7 @@ def iter_except(function, exception):
 
 
 class PyConsole(StdIO):
-    def __init__(self, root, command=[], bg="black", fg="white", *args, **kwargs):
+    def __init__(self, root, command=(), bg="black", fg="white", *args, **kwargs):
         StdIO.__init__(self, root, bg=bg, fg=fg, *args, **kwargs)
 
         self.process = None
@@ -30,8 +31,12 @@ class PyConsole(StdIO):
         if command:
             self.startNew(command)
 
+        self.bind("<a>", lambda e: self.close)
+
     def startNew(self, command):
+        if DEBUG: print("Starting new process")
         if self.process:
+            self.write("Atempting to kill process\n")
             self.process.kill()
             self.event_generate("<<Process Ended>>")
 
@@ -55,33 +60,43 @@ class PyConsole(StdIO):
         self.see("end")
 
     def sendIn(self):
-        while True:
+        while self.process:
             if self.process:
-                line = self.readline()
+                line = self.readline(timeout=1000)
+                if DEBUG: print("Read timeout")
                 line += "\n"
                 if line == "clear\n" or line == "cls\n":
                     self.replace("1.0", "end", "")
+                elif line == "exit\n":
+                    self.event_generate("<<Process Ended>>")
+                    self.write("Process forcibly closed...\n")
                 elif line != "\n":
                     try:
                         self.process.stdin.write(line.encode("UTF-8"))
                         self.process.stdin.flush()
                     except OSError:
-                        self.write("Process forcibly closed...\n")
+                        self.write("Write to process failed, process has ended unexpectedly...\n")
                         self.process.kill()
                         self.process = None
                         self.event_generate("<<Process Ended>>")
+                    except AttributeError:
+                        pass
             else:
                 sleep(1)
+        if DEBUG: print("Finished reading all input, thread will now exit and signal end of process")
+        self.close()
 
     def readOut(self):
         """ needs to be in a thread so we can read the stdout w/o blocking """
-        while True:
-            if self.process:
-                output = self.process.stdout.read(1)
-                if output:
-                    self.inQ.put(output)
-            else:
-                sleep(1)
+        while self.process and self.process.stdout is not None:
+            output = self.process.stdout.read(1)
+            if output == b'':
+                if self.process:
+                    self.process.stdout = None
+                    self.process = None
+            if output:
+                self.inQ.put(output)
+        if DEBUG: print("Finished all output, thread will now exit")
 
     def insertNewLine(self):
         """update GUI with items from the inQueue."""
@@ -92,8 +107,12 @@ class PyConsole(StdIO):
         self.after(10, self.insertNewLine)  # schedule next update
 
     def close(self):
-        if self.process:
-            self.process.kill()
+        if self.process is not None:
+            process, self.process = self.process, None
+            process.kill()
+        else:
+            self.write("Process terminated!\n")
+
         self.event_generate("<<Process Ended>>")
 
 if __name__ == "__main__":

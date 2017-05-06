@@ -4,10 +4,12 @@ if __name__ == "__main__":
 import io
 import sys
 import tkinter
-from CLIDElib.PseudoFiles import PseudoInputFile
+from time import time
 
+from CLIDElib.PseudoFiles import PseudoInputFile
 from CLIDElib.ChangeText import ChangeText
 
+millis = lambda: int(time() * 1000)
 
 class StdIO(ChangeText, io.TextIOWrapper):
     returnFlag = False
@@ -68,14 +70,19 @@ class StdIO(ChangeText, io.TextIOWrapper):
     def read(self):
         return self.readline()
 
-    def readline(self):
+    def readline(self, timeout=-1):
         self.returnFlag = False
         self.root.update()
+
+        startTime = millis()
         while not self.returnFlag:
             if self.deleteFlag:
-                return "\n"
+                return ""
+            elif timeout > 0 and (startTime + timeout) < millis():
+                return ""
             else:
                 self.root.update()
+
         ranges = self.tag_ranges("immutable")
         if len(ranges) > 1:
             start = ranges[1]
@@ -86,9 +93,6 @@ class StdIO(ChangeText, io.TextIOWrapper):
             read = "\r\n"
         self.tag_add("immutable", start, "insert lineend")
         return read
-
-    def close(self):
-        self.process.kill()
 
     def fileno(self):
         return 0
