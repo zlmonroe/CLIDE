@@ -35,7 +35,7 @@ class PyConsole(StdIO):
             self.process.kill()
             self.event_generate("<<Process Ended>>")
 
-        self.process = Popen(command, stdout=PIPE, stdin=PIPE, stderr=STDOUT, shell=True)
+        self.process = Popen(command, stdout=PIPE, stdin=PIPE, stderr=STDOUT)
 
         if not self.readThread or not self.readThread.isAlive:
             self.readThread = Thread(target=self.sendIn, args=[])
@@ -92,7 +92,8 @@ class PyConsole(StdIO):
         self.after(10, self.insertNewLine)  # schedule next update
 
     def close(self):
-        self.process.kill()
+        if self.process:
+            self.process.kill()
         self.event_generate("<<Process Ended>>")
 
 if __name__ == "__main__":

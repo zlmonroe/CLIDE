@@ -11,7 +11,7 @@ class LineNumbers(tkinter.Frame):
         self.text = changeText
 
         self.lineNumbers = tkinter.Canvas(root, width=30)
-        self.lineNumbers.pack(expand=True, fill="y")
+        self.lineNumbers.pack(fill="y", expand=True)
 
         self.text.bind("<<Change>>", self.__updateLineNumbers)
 

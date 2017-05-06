@@ -7,7 +7,9 @@ from CLIDElib.CodeBox import CodeBox
 from CLIDElib.LineNumbers import LineNumbers
 
 import os
+
 dir_path = os.path.dirname(os.path.realpath(__file__))
+
 
 class IDE(tkinter.Tk):
     def __init__(self):
@@ -17,21 +19,28 @@ class IDE(tkinter.Tk):
             self.iconbitmap("CLIDE.ico")
         except TclError:
             pass
-        
+
+
         self.sliders = ttk.PanedWindow(orient="vertical")
         self.sliders.pack(fill="both", expand=True)
 
         textFrame = tkinter.Frame(self)
 
         self.text = CodeBox(textFrame)
-        self.text.pack(side=tkinter.RIGHT)
+        self.text.pack(side=tkinter.RIGHT, expand=True, fill="both")
 
         self.lineNumbers = LineNumbers(textFrame, self.text)
-        self.lineNumbers.pack(side=tkinter.LEFT)
+        self.lineNumbers.pack(side=tkinter.LEFT, expand=True, fill="y")
 
         self.sliders.add(textFrame)
 
         self.terminal = PyConsole(self, height=10)
+
+        def closeAndKill():
+            self.terminal.close()
+            self.destroy()
+
+        self.protocol("WM_DELETE_WINDOW", closeAndKill)
         self.terminal.bind("<<Process Ended>>", lambda e: self.text.focus_set())
 
         self.sliders.add(self.terminal)
