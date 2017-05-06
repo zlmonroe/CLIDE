@@ -5,7 +5,6 @@ https://svn.python.org/projects/python/trunk/Demo/tkinter/ttk/dirbrowser.py
 (made OOP from the second one)
 """
 import os
-import glob
 import tkinter
 import tkinter.ttk
 
@@ -18,6 +17,17 @@ class DirectoryBrowser(tkinter.ttk.Frame):
                                          displaycolumns="", yscrollcommand=lambda f, l: self.autoscroll(self.vsb, f, l),
                                          xscrollcommand=lambda f, l: self.autoscroll(self.hsb, f, l))
 
+        s = tkinter.ttk.Style()
+        s.configure("Treeview", background=self["background"],
+                    foreground="#BBBBBB")
+
+        s.configure("Treeview", border=0)
+
+
+
+        print(s.layout("Treeview"))
+        print(s.element_options("Treeview.field"))
+
         self.vsb = tkinter.ttk.Scrollbar(self, orient="vertical")
         self.hsb = tkinter.ttk.Scrollbar(self, orient="horizontal")
 
@@ -25,8 +35,6 @@ class DirectoryBrowser(tkinter.ttk.Frame):
         self.hsb['command'] = self.tree.xview
 
         self.tree.heading("#0", text="Project", anchor='w')
-        self.tree.heading("size", text="File Size", anchor='w')
-        self.tree.column("size", stretch=0, width=100)
 
         self.populate_roots()
         self.tree.bind('<<TreeviewOpen>>', self.update_tree)
@@ -46,7 +54,7 @@ class DirectoryBrowser(tkinter.ttk.Frame):
         path = self.tree.set(node, "fullpath")
         self.tree.delete(*self.tree.get_children(node))
 
-        parent = self.tree.parent(node)
+        dirCount = 0
 
         for p in [elem for elem in os.listdir(path) if elem[0] != '.' and (elem[:2:] != "__" and elem[-2::] != "__")]:
             ptype = None
@@ -63,6 +71,8 @@ class DirectoryBrowser(tkinter.ttk.Frame):
                 if fname not in ('.', '..'):
                     self.tree.insert(id, 0, text="dummy")
                     self.tree.item(id, text=fname)
+                    self.tree.move(id, self.tree.parent(id), dirCount)
+                    dirCount += 1
             elif ptype == 'file':
                 size = os.stat(p).st_size
                 self.tree.set(id, "size", "%d bytes" % size)

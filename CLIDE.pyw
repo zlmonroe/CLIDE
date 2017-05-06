@@ -22,7 +22,8 @@ class IDE(tkinter.Tk):
             pass
 
         # create a toplevel menu
-        menubar = MenuBar(self)
+        menubar = MenuBar(self, activebackground="#4B6EAF", background="#3C3F41", textColor="#BBBBBB")
+        menubar.pack(side=tkinter.TOP, anchor="n", expand=False, fill="x")
 
         # display the menu
         self.config(menu=menubar)
@@ -39,7 +40,7 @@ class IDE(tkinter.Tk):
         self.text.pack(side=tkinter.RIGHT, expand=True, fill="both")
 
         self.smallerPaneWindow = tkinter.PanedWindow(self.mainPaneWindow, orient="horizontal")
-        explorer = DirectoryBrowser(self.smallerPaneWindow)
+        explorer = DirectoryBrowser(self.smallerPaneWindow, background="#3C3F41")
         self.smallerPaneWindow.add(explorer)
         self.smallerPaneWindow.add(textFrame)
         self.smallerPaneWindow.pack(expand=True, fill="both")
