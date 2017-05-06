@@ -8,18 +8,22 @@ class MenuBar(tkinter.Frame):
     def __init__(self, root, activebackground="#4B6EAF", textColor="white", *args, **kwargs):
         tkinter.Frame.__init__(self, root, *args, **kwargs)
 
-        fileButton = tkinter.Menubutton(self, text="File", bg=self["background"], activebackground=activebackground, foreground=textColor)
+        fileButton = tkinter.Menubutton(self, text="File", bg=self["background"],
+                                        activebackground=activebackground, foreground=textColor)
         fileButton.pack(side=tkinter.LEFT)
-        fileMenu = tkinter.Menu(self, tearoff=0)
-        fileMenu.add_command(label="New")
+        fileMenu = tkinter.Menu(fileButton, tearoff=0)
+        fileMenu.bind("<a>",lambda e: print("menu close event"))
+        fileMenu.add_command(label="New", command=lambda: print("new"))
+        fileMenu.add_command(label="Save", command=lambda: print("save"))
         fileButton["menu"] = fileMenu
 
-        editMenu = tkinter.Menu(self, tearoff=0)
-        # fileMenu.pack()
-        #self.add_cascade(label="Edit", menu=editMenu)
-        editMenu.add_command(label="Cut")
-        editMenu.add_command(label="Copy")
-        editMenu.add_command(label="Paste")
+        editButton = tkinter.Menubutton(self, text="Edit", bg=self["background"],
+                                        activebackground=activebackground, foreground=textColor)
+        editButton.pack(side=tkinter.LEFT)
+        editMenu = tkinter.Menu(editButton, tearoff=0)
+        editMenu.add_command(label="Find", command=lambda: print("find"))
+        editButton["menu"] = editMenu
+
 
         try:
             self.master.config(menu=self)

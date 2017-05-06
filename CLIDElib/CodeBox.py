@@ -17,11 +17,13 @@ class CodeBox(ChangeText):
         self.tag_config("Current Line", background="cornsilk")
         self.tag_config("Open Left Paren", background="#ff9e9e")
         self.tag_config("Open Right Paren", background="#9effaf")
+        self.tag_config("Comments", foreground="blue")
 
     def _keyRelease(self, event):
         """handles the special events on keypress"""
         openRight = []
         openLeft = []
+        comments = []
 
         # if keysym is control v, need to set start to 0.0 and end to "end"
         currentIndex = 0
@@ -36,14 +38,19 @@ class CodeBox(ChangeText):
                     openLeft.append("0.0 +%sc"%currentIndex)
                 else:
                     openRight.pop()
+            elif char == ";":
+                comments.append("0.0 +%sc" % currentIndex)
             currentIndex += 1
 
         self.tag_remove("Open Left Paren", "1.0", "end")
         self.tag_remove("Open Right Paren", "1.0", "end")
+        self.tag_remove("Comments", "1.0", "end")
         for index in openLeft:
             self.tag_add("Open Left Paren", index)
         for index in openRight:
             self.tag_add("Open Right Paren", index)
+        for index in comments:
+            self.tag_add("Comments", index, "%s lineend"%index)
 
     def _keyPress(self, event):
         """handles the special events on keypress"""
@@ -74,6 +81,13 @@ class CodeBox(ChangeText):
             ranges = self.tag_ranges("sel")
             self.tag_remove("Current Line", ranges[0], ranges[1])
 
+    def insert(self, index, chars, *args):
+        self.tk.call((self._w, 'insert', index, chars) + args)
+        self._keyRelease(tkinter.Event())
+
+    def replace(self, index1, index2, chars, *args):
+        self.tk.call(self._w, 'replace', index1, index2, chars, *args)
+        self._keyRelease(tkinter.Event())
 
 if __name__ == "__main__":
     root = tkinter.Tk()

@@ -40,12 +40,14 @@ class IDE(tkinter.Tk):
         self.text.pack(side=tkinter.RIGHT, expand=True, fill="both")
 
         self.smallerPaneWindow = tkinter.PanedWindow(self.mainPaneWindow, orient="horizontal")
-        explorer = DirectoryBrowser(self.smallerPaneWindow, background="#3C3F41")
+        explorer = DirectoryBrowser(self.smallerPaneWindow, background="#3C3F41", )
         self.smallerPaneWindow.add(explorer)
         self.smallerPaneWindow.add(textFrame)
         self.smallerPaneWindow.pack(expand=True, fill="both")
 
         self.mainPaneWindow.add(self.smallerPaneWindow)
+
+        explorer.bind("<<Retrieved File>>", lambda e: self.text.replace("1.0", "end", explorer.file))
 
         self.terminal = PyConsole(self, height=10)
 

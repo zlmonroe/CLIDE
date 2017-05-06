@@ -11,6 +11,7 @@ from CLIDElib.ChangeText import ChangeText
 
 millis = lambda: int(time() * 1000)
 
+
 class StdIO(ChangeText, io.TextIOWrapper):
     returnFlag = False
     deleteFlag = False

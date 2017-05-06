@@ -17,10 +17,12 @@ class DirectoryBrowser(tkinter.ttk.Frame):
                                          displaycolumns="", yscrollcommand=lambda f, l: self.autoscroll(self.vsb, f, l),
                                          xscrollcommand=lambda f, l: self.autoscroll(self.hsb, f, l))
 
+        self.file = ""
+
         s = tkinter.ttk.Style()
         s.configure("Treeview", background=self["background"],
                     foreground="#BBBBBB")
-
+        s.configure("Treeview.Heading", foreground="blue")
 
         self.vsb = tkinter.ttk.Scrollbar(self, orient="vertical")
         self.hsb = tkinter.ttk.Scrollbar(self, orient="horizontal")
@@ -32,7 +34,7 @@ class DirectoryBrowser(tkinter.ttk.Frame):
 
         self.populate_roots()
         self.tree.bind('<<TreeviewOpen>>', self.update_tree)
-        # self.tree.bind('<Double-Button-1>', self.change_dir)
+        self.tree.bind('<Double-Button-1>', self._getFile)
 
         # Arrange the self.tree and its scrollbars in the toplevel
         self.tree.grid(column=0, row=0, sticky='nswe')
@@ -79,6 +81,16 @@ class DirectoryBrowser(tkinter.ttk.Frame):
     def update_tree(self, event):
         self.tree = event.widget
         self.populate_tree(self.tree.focus())
+
+    def _getFile(self, event):
+        self.tree = event.widget
+        node = self.tree.focus()
+        if self.tree.parent(node):
+            path = os.path.abspath(self.tree.set(node, "fullpath"))
+            if os.path.isfile(path):
+                with open(path, "r") as file:
+                    self.file = file.read()
+                    self.event_generate("<<Retrieved File>>")
 
     def _change_dir(self, event):
         self.tree = event.widget
