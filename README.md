@@ -1,6 +1,9 @@
 # CLIDE
 Common Lisp Interactive Development Environment written in python 3
 
+For those who are none too fond of emacs or have simply grown to feel
+at home in the world of modern feeling IDEs.
+
 Included:
 • IDE related files (.py and one .pyw)
 • Icon file
