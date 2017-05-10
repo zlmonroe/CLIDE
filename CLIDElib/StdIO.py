@@ -4,7 +4,7 @@ if __name__ == "__main__":
 import io
 import sys
 import tkinter
-from time import time
+from time import time, sleep
 
 from CLIDElib.PseudoFiles import PseudoInputFile
 from CLIDElib.ChangeText import ChangeText
@@ -83,6 +83,7 @@ class StdIO(ChangeText, io.TextIOWrapper):
                 return ""
             else:
                 self.root.update()
+                sleep(.05)
 
         ranges = self.tag_ranges("immutable")
         if len(ranges) > 1:

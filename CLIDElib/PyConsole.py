@@ -64,7 +64,7 @@ class PyConsole(StdIO):
         while self.process:
             if self.process:
                 line = self.readline(timeout=1000)
-                if DEBUG: print("Read timeout")
+                if DEBUG and line == "": print("Read timeout")
                 line += "\n"
                 if line == "clear\n" or line == "cls\n":
                     self.replace("1.0", "end", "")
@@ -82,8 +82,6 @@ class PyConsole(StdIO):
                         self.event_generate("<<Process Ended>>")
                     except AttributeError:
                         pass
-            else:
-                sleep(1)
         if DEBUG: print("Finished reading all input, thread will now exit and signal end of process")
         self.close()
 
@@ -97,6 +95,7 @@ class PyConsole(StdIO):
                     self.process = None
             if output:
                 self.inQ.put(output)
+        sleep(1)
         if DEBUG: print("Finished all output, thread will now exit")
 
     def insertNewLine(self):
@@ -105,7 +104,7 @@ class PyConsole(StdIO):
             if not line is None:
                 self.write(line)
 
-        self.after(10, self.insertNewLine)  # schedule next update
+        self.after(30, self.insertNewLine)  # schedule next update
 
     def close(self):
         if self.process is not None:
