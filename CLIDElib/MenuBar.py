@@ -9,10 +9,11 @@ class MenuBar(tkinter.Frame):
         tkinter.Frame.__init__(self, root, *args, **kwargs)
 
         fileButton = tkinter.Menubutton(self, text="File", bg=self["background"],
-                                        activebackground=activebackground, foreground=textColor)
+                                        activebackground=activebackground, foreground=textColor,
+                                        underline=0)
         fileButton.pack(side=tkinter.LEFT)
         fileMenu = tkinter.Menu(fileButton, tearoff=0)
-        fileMenu.bind("<a>",lambda e: print("menu close event"))
+        fileMenu.bind("<Leave>", lambda e: print("ran"))
         fileMenu.add_command(label="New", command=lambda: print("new"))
         fileMenu.add_command(label="Save", command=lambda: print("save"))
         fileButton["menu"] = fileMenu

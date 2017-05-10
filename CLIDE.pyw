@@ -33,7 +33,7 @@ class IDE(tkinter.Tk):
 
         textFrame = tkinter.Frame(self)
 
-        self.text = CodeBox(textFrame)
+        self.text = CodeBox(textFrame)  # , background="#3C3F41", foreground="white")
         self.lineNumbers = LineNumbers(textFrame, self.text)
 
         self.lineNumbers.pack(side=tkinter.LEFT, expand=False, fill="y")

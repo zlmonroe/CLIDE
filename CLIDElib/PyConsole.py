@@ -8,7 +8,8 @@ from time import sleep
 
 from CLIDElib.StdIO import StdIO
 
-DEBUG = False
+DEBUG = True
+
 
 def iter_except(function, exception):
     """Works like builtin 2-argument `iter()`, but stops on `exception`."""
@@ -21,7 +22,7 @@ def iter_except(function, exception):
 
 class PyConsole(StdIO):
     def __init__(self, root, command=(), bg="black", fg="white", *args, **kwargs):
-        StdIO.__init__(self, root, bg=bg, fg=fg, *args, **kwargs)
+        StdIO.__init__(self, root, bg=bg, fg=fg, insertbackground=fg, *args, **kwargs)
 
         self.process = None
         self.readThread = None
@@ -42,12 +43,12 @@ class PyConsole(StdIO):
 
         self.process = Popen(command, stdout=PIPE, stdin=PIPE, stderr=STDOUT)
 
-        if not self.readThread or not self.readThread.isAlive:
+        if not self.readThread or not self.readThread.is_alive():
             self.readThread = Thread(target=self.sendIn, args=[])
             self.readThread.daemon = True
             self.readThread.start()
 
-        if not self.writeThread or not self.writeThread.isAlive:
+        if not self.writeThread or not self.writeThread.is_alive():
             self.inQ = Queue()
             self.insertNewLine()
 
@@ -114,6 +115,7 @@ class PyConsole(StdIO):
             self.write("Process terminated!\n")
 
         self.event_generate("<<Process Ended>>")
+
 
 if __name__ == "__main__":
     import tkinter

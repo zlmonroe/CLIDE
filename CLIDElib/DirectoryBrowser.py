@@ -20,9 +20,10 @@ class DirectoryBrowser(tkinter.ttk.Frame):
         self.file = ""
 
         s = tkinter.ttk.Style()
+        s.theme_use("clam")
         s.configure("Treeview", background=self["background"],
-                    foreground="#BBBBBB")
-        s.configure("Treeview.Heading", foreground="blue")
+                    foreground="#BBBBBB", fieldbackground=self["background"])
+        s.configure("Treeview.Heading", foreground="#BBBBBB", background=self["background"])
 
         self.vsb = tkinter.ttk.Scrollbar(self, orient="vertical")
         self.hsb = tkinter.ttk.Scrollbar(self, orient="horizontal")

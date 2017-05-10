@@ -15,6 +15,7 @@ class CodeBox(ChangeText):
         self.bind("<KeyPress>", self._keyPress)
         self.bind_all("<<Change>>", self._highlightLine)
         self.tag_config("Current Line", background="cornsilk")
+        self.tag_lower("Current Line")
         self.tag_config("Open Left Paren", background="#ff9e9e")
         self.tag_config("Open Right Paren", background="#9effaf")
         self.tag_config("Comments", foreground="blue")
@@ -29,10 +30,10 @@ class CodeBox(ChangeText):
         currentIndex = 0
         for char in self.get("1.0", "end"):
             if char == "(":
-                if len(openLeft) == 0:
-                    openRight.append("0.0 +%sc"%currentIndex)
-                else:
-                    openLeft.pop()
+                # if len(openLeft) == 0:
+                openRight.append("0.0 +%sc"%currentIndex)
+                # else:
+                #     openLeft.pop()
             elif char == ")":
                 if len(openRight) == 0:
                     openLeft.append("0.0 +%sc"%currentIndex)
