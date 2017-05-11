@@ -89,9 +89,8 @@ class DirectoryBrowser(tkinter.ttk.Frame):
         if self.tree.parent(node):
             path = os.path.abspath(self.tree.set(node, "fullpath"))
             if os.path.isfile(path):
-                with open(path, "r") as file:
-                    self.file = file.read()
-                    self.event_generate("<<Retrieved File>>")
+                self.file = path
+                self.event_generate("<<Retrieved File>>")
 
     def _change_dir(self, event):
         self.tree = event.widget

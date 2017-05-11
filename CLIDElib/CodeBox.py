@@ -50,12 +50,12 @@ class CodeBox(ChangeText):
         self.tag_config("Open Right Paren", background="#9effaf")
         self.tag_config("Variables", foreground="#66ffff", font=self.fontBold)
         self.tag_config("Constants", foreground="#000099", font=self.fontBold)
-        self.tag_config("Comments", foreground="blue")
         self.tag_config("Special Forms", foreground="green", font=self.fontBold)
         self.tag_config("Types", foreground="red", font=self.fontBold)
         self.tag_config("Loop Clauses", foreground="#ff99ff", font=self.fontBold)
         self.tag_config("Macros", foreground="orange", font=self.fontBold)
         self.tag_config("Functions", foreground="#ac00e6", font=self.fontBold)
+        self.tag_config("Comments", foreground="blue", font=self.fontBold)
 
         self.toolTip = ToolTip(self)
 
@@ -66,14 +66,15 @@ class CodeBox(ChangeText):
             helpText = ""
             for tag in tags:
                 helpText += tag + "\n"
+            self.toolTip.hidetip()
             self.toolTip.showtip(helpText[:-1])
-            self.after(3000, self.toolTip.hidetip)
+            self.after(5000, self.toolTip.hidetip)
             return "break"
 
         self.bind("<Alt-Return>", post)
 
     def _keyRelease(self, event):
-        """handles the special events on keypress"""
+        """handles the special events on keyRelease"""
 
         # find parenthesis through old fashioned stack style search
         openRight = []
@@ -135,16 +136,15 @@ class CodeBox(ChangeText):
             return "break"
         # delete spaces like tabs
         elif event.keysym == "BackSpace":
-            char = self.get("insert -1c", "insert")
-            if char == " ":
-                lastFourChar = self.get("insert -%dc" % (4 - len(self.get("insert linestart", "insert")) % 4), "insert")
-                while lastFourChar and lastFourChar[-1] == " ":
-                    lastFourChar = lastFourChar[0:-1:1]
-                    self.delete("insert -1c", "insert")
+            if int(self.index("insert").split(".")[1])%4 == 0 and\
+                            self.get("insert -%dc" % (4 - len(self.get("insert linestart", "insert")) % 4), "insert") == "    " and\
+                    self.get("insert linestart", "insert").strip(" ") == "":
+                self.delete("insert -4c", "insert")
                 return "break"
         elif event.keysym == "Return":
             if self.get("insert linestart", "insert").strip(" ") == "":
                 self.insert("insert", "\n" + self.get("insert linestart", "insert"))
+                self.see("insert")
                 return "break"
 
     def _highlightLine(self, event=None):

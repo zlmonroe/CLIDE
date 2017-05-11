@@ -8,7 +8,7 @@ from time import sleep
 
 from CLIDElib.StdIO import StdIO
 
-DEBUG = True
+DEBUG = False
 
 
 def iter_except(function, exception):
