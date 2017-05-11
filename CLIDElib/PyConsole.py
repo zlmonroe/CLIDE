@@ -95,16 +95,16 @@ class PyConsole(StdIO):
                     self.process = None
             if output:
                 self.inQ.put(output)
-        sleep(1)
         if DEBUG: print("Finished all output, thread will now exit")
 
     def insertNewLine(self):
         """update GUI with items from the inQueue."""
-        for line in iter_except(self.inQ.get_nowait, Empty):  # display all content
-            if not line is None:
-                self.write(line)
-
-        self.after(30, self.insertNewLine)  # schedule next update
+        line = ""
+        for char in iter_except(self.inQ.get_nowait, Empty):  # display all content
+            if not char is None:
+                line += char.decode("UTF-8")
+        if line != "": self.write(line.replace("Welcome to Clozure Common Lisp Version 1.11-r16635  (WindowsX8664)!\r\n\r\nCCL is developed and maintained by Clozure Associates. For more information\r\nabout CCL visit http://ccl.clozure.com.  To enquire about Clozure's Common Lisp\r\nconsulting services e-mail info@clozure.com or visit http://www.clozure.com.\r\n\r\n", ""))
+        self.after(50, self.insertNewLine)  # schedule next update
 
     def close(self):
         if self.process is not None:

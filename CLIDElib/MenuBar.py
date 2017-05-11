@@ -28,11 +28,17 @@ class MenuBar(tkinter.Frame):
         self._stopImage = tkinter.PhotoImage(file="stop.png")
         stopButton = tkinter.Button(self, image=self._stopImage, borderwidth=0, bg=self["background"],
                                     command=clide.terminal.close)
-        stopButton.pack(side=tkinter.RIGHT, padx=10)
+        stopButton.pack(side=tkinter.RIGHT, padx=5)
+
+        self._debugImage = tkinter.PhotoImage(file="debug.png")
+        debugButton = tkinter.Button(self, image=self._debugImage, borderwidth=0, bg=self["background"],
+                                     command=clide.debugLisp)
+        debugButton.pack(side=tkinter.RIGHT, padx=5)
 
         self._runImage = tkinter.PhotoImage(file="run.png")
-        runButton = tkinter.Button(self, image=self._runImage, borderwidth=0, bg=self["background"], command=clide.runLisp)
-        runButton.pack(side=tkinter.RIGHT, padx=10)
+        runButton = tkinter.Button(self, image=self._runImage, borderwidth=0, bg=self["background"],
+                                   command=clide.runLisp)
+        runButton.pack(side=tkinter.RIGHT, padx=5)
 
         try:
             self.master.config(menu=self)

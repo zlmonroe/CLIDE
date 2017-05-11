@@ -9,6 +9,7 @@ from CLIDElib.MenuBar import MenuBar
 from CLIDElib.DirectoryBrowser import DirectoryBrowser
 
 import os
+from time import sleep
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -64,12 +65,40 @@ class IDE(tkinter.Tk):
     def runLisp(self, event=None):
         self.terminal.replace("1.0", tkinter.END, "")
 
-        with open("test.lsp", "w+") as file:
-            file.write(self.text.get("1.0", tkinter.END) + "\r\n")
+        with open("lastRun.lisp", "w+") as file:
+            file.write(self.text.get("1.0", tkinter.END))
 
-        cmd = [dir_path + "/ccl/wx86cl64.exe", "-l", "test.lsp"]
-        # cmd = ["cmd.exe"]
+        cmd = [dir_path + "/ccl/wx86cl64.exe", "-l", "lastRun.lisp"]
         self.terminal.startNew(cmd)
+
+    def debugLisp(self, event=None):
+        self.terminal.replace("1.0", tkinter.END, "")
+        program = self.text.get("1.0", "end")[:-1]
+        with open("lastRun.lisp", "w+") as file:
+            file.write(program)
+
+        cmd = [dir_path + "/ccl/wx86cl64.exe"]
+        self.terminal.startNew(cmd)
+
+        self.terminal.replace("1.0", "end", "")
+
+        self.counter = 0
+
+        def nextline(event=None):
+            lines = program.split("\n")
+            if self.counter < len(lines):
+                line = lines[self.counter]
+                if line != "":
+                    self.terminal.write("<Line %s>: " % self.counter + ": " + line + "\n")
+                    self.terminal.process.stdin.write((line + "\r\n").encode("UTF-8"))
+                    self.terminal.process.stdin.flush()
+                self.counter += 1
+            else:
+                print("unbound")
+                self.unbind("<Button-1>")
+
+        self.bind("<Button-1>", nextline)
+        nextline()
 
     def save(self, event=None):
         with filedialog.asksaveasfile(mode='w+', defaultextension=".lsp") as f:

@@ -61,7 +61,7 @@ class StdIO(ChangeText, io.TextIOWrapper):
             immutable = "1.0"
         else:
             immutable = immutable[1]
-        self.insert("%s +1c" % immutable, string, "immutable")
+        self.insert("%s" % immutable, string, "immutable")
         self.mark_set("insert", "end")
         self.see("end")
 
