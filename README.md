@@ -16,3 +16,5 @@ license agreements; and to You under the Apache License, Version 2.0. "
 
 The files inside of ccl are provided without any modifications and with all of the licensing
 and documentations as downloaded from https://ccl.clozure.com/
+
+*Currently not being developped (2/26/18)
